@@ -43,7 +43,7 @@ git-add:
 push:
 	git add -u
 	git commit -m "${MSG}"
-	git push -u origin master
+	git push -u origin main
 
 stat:
 	git status
