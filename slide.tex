@@ -1,0 +1,894 @@
+% Created 2023-06-09 Fri 10:53
+% Intended LaTeX compiler: pdflatex
+\documentclass[fleqn,aspectratio=1610]{beamer}
+\author{Noboru Murata}
+\date{\today}
+\title{Statsitical Analysis of On-line Learning}
+\subtitle{optimal and semi-optimal stochastic gradient}
+\usepackage[toc=none]{mytalk}
+\addbibresource{papers.bib}
+\graphicspath{{figs/},{refs/}}
+\DeclareGraphicsExtensions{.pdf,.png,.eps,.jpg}
+\institute{\url{https://noboru-murata.github.io/}}
+\hypersetup{
+ pdfauthor={Noboru Murata},
+ pdftitle={Statsitical Analysis of On-line Learning},
+ pdfkeywords={online learning, statistical analysis, optimal gradient},
+ pdfsubject={based on N. Murata \& Amari 1999, https://doi.org/10.1016/S0165-1684(98)00206-0},
+ pdfcreator={Emacs 28.2 (Org mode 9.6.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\begin{frame}{Outline}
+\tableofcontents
+\end{frame}
+
+
+\section{Introduction}
+\label{sec:org35ac57c}
+\subsection{batch and on-line learning}
+\label{sec:org29793be}
+\begin{frame}[label={sec:org31d68da}]{Problem Setting}
+notation:
+\begin{itemize}
+\item \structure{data}: 
+i.i.d.\textasciitilde{} observations from ground truth distribution \(P\)
+\begin{equation}
+  z_{1},z_{2},\dotsc,z_{t},\dotsc \sim^{\mathrm{i.i.d.}} P 
+  % \quad\text{(ground truth)}
+\end{equation}
+\item \structure{learning machine}: 
+specified by a finite dimensional parameter
+\begin{equation}
+  \theta \in \Theta\subset \mathbb{R}^{m}
+\end{equation}
+\item \structure{loss function}: 
+penalty of machine \(\theta\) for a given datum \(z\) 
+\begin{equation}
+  l(z;\theta)
+  \quad\text{(a smooth function with respect to \(\theta\))}
+\end{equation}
+for example:
+\begin{align}
+  l(z;\theta)&=-\log p(z:\theta)
+  &&\text{negative log loss}\\[-2pt]
+  l(z;\theta)&=|y-f(x;\theta)|^{2}
+  &&\text{squared loss for \(z=(x,y)\)}
+\end{align}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgac04f4a}]{Expected Losses}
+\begin{itemize}
+\item \structure{population loss}: not accessible
+\begin{equation}
+  L(\theta)
+  =\mathbb{E}_{Z\sim P}[l(Z;\theta)]
+\end{equation}
+\begin{equation}
+  \theta_{}
+  = \arg\min_\theta L(\theta)
+  \quad\text{(optimal parameter)}
+\end{equation}
+\item \structure{empirical loss}: accessible
+\begin{equation}
+  \hat{L}_{t}(\theta)
+  =\frac{1}{t}\sum_{z_{i}\in D_{t}}l(z_{i};\theta),
+  \quad D_{t}=\{z_{i}; i=1,\dotsc,t\}
+\end{equation}
+\item \(\hat{L}\) is justified by \emph{the law of large numbers}
+\begin{equation}
+  \hat{L}_{t}(\theta)=\frac{1}{t}\sum_{z_{i}\in {D_{t}}}l(z_{i};\theta)
+  \;\xrightarrow{t\to\infty}\;
+  L(\theta)
+  =\mathbb{E}_{Z\sim P}\left[l(Z;\theta)\right]
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org7cc4e6b}]{Batch and On-line Learning}
+\begin{itemize}
+\item \structure{batch learning}: minimize the empirical loss
+\begin{equation}
+  \hat\theta_{t}
+  = \arg\min_\theta \hat{L}_{t}(\theta),
+\end{equation}
+\item \structure{on-line learning}: update sequentially
+with a datum sampled at each time
+(or resampled from pooled data)
+\begin{equation}
+  \theta_{t}
+  = \theta_{t-1} - \varPhi_{t}\nabla l(z_{t};\theta_{t-1}),
+  % = \theta_{t} - \varepsilon\nabla l(z_{t};\theta_{t}),
+  % \quad(\nabla:\text{gradient w.r.t.\ \(\theta\)})
+\end{equation}
+where \(\nabla\) denotes the gradient with respect to \(\theta\),
+and \(\varPhi\) is a matrix which controls the rate of convergence.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgd59a573}]{Characteristics}
+\begin{itemize}
+\item \structure{batch learning}:
+\begin{itemize}
+\item pros::  can adopt wide class of loss functions
+\item cons::  shows slow convergence\\[0pt]
+may have many local minima\\[0pt]
+should store all the observations
+\end{itemize}
+\item \structure{on-line learning}:
+\begin{itemize}
+\item pros:: do not have to store all the observations\\[0pt]
+(good for massive data stream)\\[0pt]
+can escape from local minima\\[0pt]
+can follow the change of true distributions
+\item cons:: should control learning rate \(\varepsilon\) properly\\[0pt]
+(do not converge with constant \(\varepsilon\))
+\end{itemize}
+\end{itemize}
+\end{frame}
+\begin{frame}[label={sec:org4b0994b}]{}
+\centering
+\includegraphics<+| handout:0>[page=1,width=0.9\textwidth]{batch_grad}%
+\includegraphics<+| handout:0>[page=2,width=0.9\textwidth]{batch_grad}%
+\includegraphics<+| handout:0>[page=3,width=0.9\textwidth]{batch_grad}%
+\includegraphics<+| handout:0>[page=4,width=0.9\textwidth]{batch_grad}%
+\includegraphics<+| handout:0>[page=5,width=0.9\textwidth]{batch_grad}%
+\includegraphics<+| handout:0>[page=6,width=0.9\textwidth]{batch_grad}%
+\includegraphics<+| handout:0>[page=7,width=0.9\textwidth]{batch_grad}%
+\includegraphics<+| handout:0>[page=8,width=0.9\textwidth]{batch_grad}%
+\includegraphics<+| handout:0>[page=9,width=0.9\textwidth]{batch_grad}%
+\includegraphics<+| handout:0>[page=10,width=0.9\textwidth]{batch_grad}%
+\includegraphics<+| handout:1>[page=11,width=0.9\textwidth]{batch_grad}%
+\end{frame}
+
+\begin{frame}[label={sec:org5225542}]{}
+\centering
+\includegraphics<+| handout:0>[page=1,width=0.9\textwidth]{online}%
+\includegraphics<+| handout:0>[page=2,width=0.9\textwidth]{online}%
+\includegraphics<+| handout:0>[page=3,width=0.9\textwidth]{online}%
+\includegraphics<+| handout:0>[page=4,width=0.9\textwidth]{online}%
+\includegraphics<+| handout:0>[page=5,width=0.9\textwidth]{online}%
+\includegraphics<+| handout:0>[page=6,width=0.9\textwidth]{online}%
+\includegraphics<+| handout:0>[page=7,width=0.9\textwidth]{online}%
+\includegraphics<+| handout:0>[page=8,width=0.9\textwidth]{online}%
+\includegraphics<+| handout:0>[page=9,width=0.9\textwidth]{online}%
+\includegraphics<+| handout:0>[page=10,width=0.9\textwidth]{online}%
+\includegraphics<+| handout:1>[page=11,width=0.9\textwidth]{online}%
+\end{frame}
+
+\begin{frame}[label={sec:org5466c8f}]{Questions}
+\begin{itemize}
+\item is on-line learning inferior to batch?
+\item how on-line estimators behave?
+\item what are good learning parameters?
+\end{itemize}
+\end{frame}
+
+
+\section{Problem Formulation}
+\label{sec:org0442b39}
+\subsection{statistical properties of batch learning}
+\label{sec:org411f0b4}
+\begin{frame}[label={sec:orgf01e015}]{Asymptotic Normality}
+\begin{lemma}[Godambe, 1991]\label{sec:org16c5621}
+\nocite{Godambe1991}
+The distribution of \(\hat{\theta}_{t}\) converges
+to the normal distribution 
+\begin{equation}
+  \hat{\theta}_{t}
+  \sim \mathcal{N}\left(\theta_*,\frac{1}{t}V_{}\right),\quad
+  V_{}=H^{-1}GH^{-1}
+\end{equation}
+under some regularity condition, where
+\begin{align}
+  G
+  &=\mathbb{E}_{Z\sim P}
+    \left[
+    \nabla l(Z;\theta_{}) \nabla l(Z;\theta_{})^{\mathsf{T}}
+    \right],\\
+  H
+  &=\mathbb{E}_{Z\sim P}
+    \left[
+    \nabla\nabla l(Z;\theta_{})
+    \right],
+\end{align}
+and \(\theta_{}\) is the optimal parameter of the population loss:
+\begin{equation}
+  \theta_{}
+  = \arg\min_\theta L(\theta).
+\end{equation}
+\end{lemma}
+\end{frame}
+
+\begin{frame}[label={sec:orgd98a009}]{Generalization Error}
+\begin{theorem}[]\label{sec:org378cb83}
+The expectation of the population loss is asymptotically given by
+\begin{equation}
+  \mathbb{E}\Bigl[L(\hat\theta_{t})\Bigr]
+  =L(\theta_*)
+  +\frac{1}{2t}\mathrm{tr}\, GH^{-1}
+  +o\left(\frac{1}{t}\right),
+\end{equation}
+where the expectation is taken with respect to \(D_{t}\).
+
+The variance is asymptotically given by
+\begin{equation}
+  \mathbb{V}\Bigl[L(\hat\theta_{t})\Bigr]
+  =\frac{1}{2t^2}\mathrm{tr}\, GH^{-1}GH^{-1}
+  +o\left(\frac{1}{t^2}\right).
+\end{equation}
+\end{theorem}
+\end{frame}
+
+\begin{frame}[label={sec:orge7831c1}]{Training Error}
+\begin{theorem}[]\label{sec:org33c3c0c}
+The expectation of the empirical loss is asymptotically given by
+\begin{equation}
+  \mathbb{E}\Bigl[\hat{L}_{t}(\hat\theta_{t})\Bigr]
+  =L(\theta_{})
+  -\frac{1}{2t}\mathrm{tr}\, GH^{-1}
+  +o\left(\frac{1}{t}\right),
+\end{equation}
+where the expectation is taken with respect to \(D_{t}\).
+
+The variance is asymptotically given by
+\begin{equation}
+  \mathbb{V}\Bigl[\hat{L}_{t}(\hat\theta_{t})\Bigr]
+  =\frac{1}{t}\mathbb{V}_{Z\sim P}\left[l(Z;\theta_{})\right]
+  +o\left(\frac{1}{t}\right).
+\end{equation}
+\end{theorem}
+\end{frame}
+
+\begin{frame}[label={sec:orge5b5bd8}]{Generalization vs Training}
+\begin{itemize}
+\item generalization error:
+\begin{equation}
+  \mathbb{E}\Bigl[L(\hat\theta_{t})\Bigr]
+  =L(\theta_*)
+  +\frac{1}{2t}\mathrm{tr}\, GH^{-1}
+  +o\left(\frac{1}{t}\right),
+\end{equation}
+\item training error:
+\begin{equation}
+  \mathbb{E}\Bigl[\hat{L}_{t}(\hat\theta_{t})\Bigr]
+  =L(\theta_{})
+  -\frac{1}{2t}\mathrm{tr}\, GH^{-1}
+  +o\left(\frac{1}{t}\right),
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org1a22a00}]{Generalized AIC}
+\begin{corollary}[Akaike, 1974]\label{sec:orgf325a83}
+The generalization error is
+estimated from the training error by correcting the bias as
+\begin{equation}
+  L(\hat\theta_{t})
+  =
+  \hat{L}_{t}(\hat\theta_{t})
+  +\frac{1}{t}\mathrm{tr}\, GH^{-1}.
+  % \mathbb{E}\left[L(\hat\theta_{t})\right]
+  % =
+  % \mathbb{E}\left[\hat{L}_{t}(\hat\theta_{t})\right]
+  % +\frac{1}{t}\mathrm{tr}\, GH^{-1}.
+\end{equation}
+In the case of the maximum likelihood estimation,
+if the ground truth is realized by \(\theta_{}\), 
+\begin{equation}
+  L(\hat\theta_{t})
+  =
+  \hat{L}_{t}(\hat\theta_{t})
+  +\frac{m}{t}\quad (m:\text{ dim.\ of }\theta),
+  % \mathbb{E}\left[L(\hat\theta_{t})\right]
+  % =
+  % \mathbb{E}\left[\hat{L}_{t}(\hat\theta_{t})\right]
+  % +\frac{m}{t}\quad (m:\text{ dim.\ of }\theta).
+\end{equation}
+because \(H=G\).
+\end{corollary}
+\end{frame}
+
+\subsection{optimal learning rate for on-line learning}
+\label{sec:orgc3ee714}
+\begin{frame}[label={sec:org1a9eff8}]{Recursive Relation of Consecutive Estimates}
+\begin{lemma}[Akahira \& Takeuchi, 1981; Bottou \& Le Cun, 2005]\label{sec:org037048c}
+Let \(\hat\theta_{t-1}\) and \(\hat\theta_{t}\) be estimates for
+\(D_{t-1}\) and \(D_{t}=D_{t-1}\cup\{z_{t}\}\).
+Then
+\begin{equation}
+  \hat\theta_{t}
+  =\hat\theta_{t-1}
+  -\frac{1}{t}\hat{H}_{t}^{-1}\nabla l(z_{t};\hat\theta_{t-1})
+  +\mathcal{O}_p\left(\frac{1}{t^2}\right)
+\end{equation}
+holds under some mild condition,
+where \(\hat{H}_{t}\) is the empirical Hessian defined by
+\begin{equation}
+  \hat{H}_{t}=\frac{1}{t}\sum_{z_{i}\in D_{t}}
+  \nabla\nabla l(z_{i};\hat\theta_{t-1}).
+\end{equation}
+\end{lemma}
+\end{frame}
+
+\begin{frame}[label={sec:org5660141}]{Batch vs On-line}
+\begin{itemize}
+\item batch learning:
+\begin{equation}
+  \hat\theta_{t}
+  =\hat\theta_{t-1}
+  -\frac{1}{t}\hat{H}_{t}^{-1}\nabla l(z_{t};\hat\theta_{t-1})
+  +\text{(higher order term)}
+\end{equation}
+\item optimal on-line learning:
+\begin{equation}
+  \theta_{t}
+  =\theta_{t-1}
+  -\frac{1}{t}\tilde{H}_{t-1}^{-1}\nabla l(z_{t};\theta_{t-1})
+  +\text{(higher order term)}
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org80ac9d1}]{Optimal On-line Learning}
+\begin{itemize}
+\item optimal design: Newton-Raphson \(+\) \(1/t\)-annealing
+\begin{equation}
+  \varPhi_{t} = \frac{1}{t} \hat{H}_{t}^{-1},
+  % \varepsilon_{t} = \frac{1}{t} \hat{H}_{t},
+  % \quad\text{\(\varepsilon_{t}\): matrix}
+\end{equation}
+\item on-line estimate of Hessian: \%(Kalman filtering;Bottou, 1998)
+(MLE case; Bottou, 1998)
+\begin{align}
+  \varPhi_{t+1}
+  &=
+    \varPhi_{t}
+    -\frac{\varPhi_{t}\nabla l\nabla l^{\mathsf{T}}\varPhi_{t}}
+    {1+\nabla l^{\mathsf{T}}\varPhi_{t}\nabla l}
+  \\
+  &\text{ where }\nabla l=\nabla l(z_{t+1};\theta_{t})
+\end{align}
+stochastic-BFGS (Nocedal et al, 2014), etc.
+\item rate of convergence: \alert{equivalent with batch learning}\\[0pt]
+(NM, 1998; NM \& Amari, 1999; Bottou \& Le Cun, 2005)
+\nocite{Bottou1998,Murata1998,MurataAmari1999,BottouLeCun2005}
+\end{itemize}
+\end{frame}
+\begin{frame}[label={sec:orgb8c2434}]{}
+\centering
+\includegraphics<+|handout:0>[page=1,width=0.9\textwidth]{batch_newton}%
+\includegraphics<+|handout:0>[page=2,width=0.9\textwidth]{batch_newton}%
+\includegraphics<+|handout:0>[page=3,width=0.9\textwidth]{batch_newton}%
+\includegraphics<+|handout:0>[page=4,width=0.9\textwidth]{batch_newton}%
+\includegraphics<+|handout:0>[page=5,width=0.9\textwidth]{batch_newton}%
+\includegraphics<+|handout:0>[page=6,width=0.9\textwidth]{batch_newton}%
+\includegraphics<+|handout:0>[page=7,width=0.9\textwidth]{batch_newton}%
+\includegraphics<+|handout:0>[page=8,width=0.9\textwidth]{batch_newton}%
+\includegraphics<+|handout:0>[page=9,width=0.9\textwidth]{batch_newton}%
+\includegraphics<+|handout:0>[page=10,width=0.9\textwidth]{batch_newton}%
+\includegraphics<+|handout:0>[page=11,width=0.9\textwidth]{batch_newton}%
+\includegraphics<+|handout:0>[page=12,width=0.9\textwidth]{batch_newton}%
+\includegraphics<+|handout:1>[page=13,width=0.9\textwidth]{batch_newton}%
+\end{frame}
+
+\begin{frame}[label={sec:org59f2b10}]{Recursive Relation of Smooth Functions}
+\begin{lemma}[Amari, 1967]\label{sec:org8a7ee73}
+\nocite{Amari1967}
+
+\begin{align}
+  \mathbb{E}^{\theta_{t+1}}\left[f(\theta_{t+1})\right]%\\
+  =&
+     \mathbb{E}^{\theta_{t}}\left[f(\theta_{t})\right]
+     -\mathbb{E}^{\theta_{t}}\left[\nabla f(\theta_{t})^{\mathsf{T}}\varPhi_{t}
+     \nabla L(\theta_{t})\right]\\
+   &+\frac{1}{2}\mathrm{tr}\,
+     \mathbb{E}^{\theta_{t}}\left[
+     \varPhi_{t}G(\theta_{t})\varPhi_{t}^{\mathsf{T}}\nabla\nabla f(\theta_{t})
+     \right]
+     +\mathcal{O}(\|\varPhi_{t}\|^3)
+\end{align}
+
+holds for any smooth function \(f(\theta)\),
+where \(\mathbb{E}^{\theta}\) 
+denotes the expectation with respect to \(\theta\),
+and \(G(\theta)\) is defined by
+\begin{equation}
+  G(\theta)=
+  \mathbb{E}_{Z\sim P}
+  \left[\nabla l(Z;\theta)\nabla l(Z;\theta)^{\mathsf{T}}\right].
+\end{equation}
+\end{lemma}
+\end{frame}
+
+\begin{frame}[label={sec:org1850318}]{Linear Operators for Covariance Analysis}
+\begin{definition}[]\label{sec:orgc160ca6}
+Let \(A\) be an \(m\times m\) square matrix 
+and \(M\) be an \(m\times m\) symmetric matrix.
+We define two linear operators as follows:
+\begin{align}
+  \Xi_{A}M
+  &= AM+(AM)^{\mathsf{T}},\\
+  \Omega_{A}M
+  &= AMA^{\mathsf{T}}.
+\end{align}
+\end{definition}
+\end{frame}
+
+\begin{frame}[label={sec:orgd94bfe5}]{Recursive Relations of Parameter Statistics}
+\begin{lemma}[]\label{sec:org1daed68}
+Around the optimal parameter,
+the following approximated recursive relations for
+the expectation \(\bar\theta_{t}=\mathbb{E}^{\theta_{t}}\left[\theta_{t}\right]\)
+and the covariance \(V_{t}=\mathbb{V}^{\theta_{t}}\left[\theta_{t}\right]\)
+hold:
+\begin{align}
+  \bar{\theta}_{t+1}
+  &=\bar{\theta}_{t}
+    -Q_{t}(\bar{\theta}_{t}-\theta_{}),\\
+  V_{t+1}
+  &=V_{t}
+    -\Xi_{Q_{t}}V_{t}
+    +\Omega_{Q_{t}}V_{}
+    -\Omega_{Q_{t}}(\bar{\theta}_{t}-\theta_{}) 
+    (\bar{\theta}_{t}-\theta_{})^{\mathsf{T}},
+\end{align}
+
+where
+\begin{equation}
+  Q_{t}=\varPhi_{t}H,\quad
+  V_{}=H^{-1}GH^{-1}.
+\end{equation}
+(note: \(\Xi_{A}M= AM+(AM)^{\mathsf{T}},\;\Omega_{A}M= AMA^{\mathsf{T}}\))
+\end{lemma}
+\end{frame}
+
+\begin{frame}[label={sec:org537e1be}]{Convergence Rate of \(1/t\)-annealing}
+\begin{theorem}[]\label{sec:org1a60e5b}
+Let \(\varPhi\) be \(C/t\), where \(C\) is a constant matrix.
+If \(\lambda_{\min}(CH)\geq 1\), 
+
+the leading terms are given by
+
+\begin{align}
+  \bar\theta_{t}
+  &=\theta_{}+S_{t}(\theta_{0}-\theta_{}),
+    \quad
+    S_{t}
+    =\prod_{\tau=2}^{t}\left(I-\frac{CH}{\tau}\right)
+    =\mathcal{O}\left(\frac{1}{t^{\lambda_{\min}}}\right),\\
+  V_{t}
+  &=\left[\left(\Xi_{CH}-I\right)^{-1}\Omega_{CH}\right]\frac{1}{t}V_{},
+    \quad V_{}=H^{-1}GH^{-1},
+\end{align}
+where \(\theta_{0}\) is an initial parameter.
+\end{theorem}
+\end{frame}
+
+\begin{frame}[label={sec:orgb01f861}]{Eigenvalues of Operators}
+\begin{lemma}[]\label{sec:org839b71f}
+Let \(\lambda_{i},\;i=1,\dotsc,m\) be eigenvalues of \(A\).
+The eigenvalues of \(\Xi_{A}\) and \(\Omega_{A}\) are given by
+\begin{align}
+  \Xi_{A}:\;&\lambda_{i}+\lambda_{j},\;i,j=1,\dotsc,m,\\
+  \Omega_{A}:\;&\lambda_{i}\lambda_{j},\;i,j=1,\dotsc,m.
+\end{align}
+\end{lemma}
+\begin{proof}[]
+This follows by the relation
+\begin{equation}
+  \mathrm{cs}(ABC)=(C^{\mathsf{T}}\otimes A)\mathrm{cs} B
+\end{equation}
+for any \(m\times m\) square matrices \(A,B,C\).
+\end{proof}
+\end{frame}
+
+\begin{frame}[label={sec:orgc5a9f7e}]{Optimal Design of \(\varPhi_{t}=C/t\)}
+\begin{itemize}
+\item larger \(\lambda_{\min}\) is advantageous to faster convergence of
+\(\bar\theta_{t}\).
+\item \((\Xi_{CH}-I)^{-1}\Omega_{CH}\) expands \(V_{}/t\), which is the
+minimum covariance attained by batch learning.
+\item eigenvalues of \((\Xi_{CH}-I)^{-1}\Omega_{CH}\) are given by
+\begin{equation}
+  \frac{\lambda_{i}\lambda_{j}}{\lambda_{i}+\lambda_{j}-1},
+\end{equation}
+where \(\lambda_{i}\)'s are eigenvalues of \(CH\).
+\item if \(C=H^{-1}\), \%i.e. \(CH=I\),
+all the eigenvalues of \((\Xi_{I}-I)^{-1}\Omega_{I}\) 
+are equal to 1, i.e. \(V_{t}=V_{}/t\).
+\item \(\varPhi_{t}=H^{-1}/t\) is optimal.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgf37e515}]{Equivalence to Batch Learning}
+\begin{itemize}
+\item on-line learning: 
+\begin{align}
+  \mathbb{E}\left[(\theta_{t}-\theta_{})(\theta_{t}-\theta_{})^{\mathsf{T}}\right]
+  &=\mathbb{V}\left[\theta_{t}\right]
+  % +\text{bias}
+  % +\mathcal{O}\left(\frac{1}{t^{2}}\right)
+    +\mathbb{E}\left[\theta_{t}-\theta_{}\right]
+    \mathbb{E}\left[\theta_{t}-\theta_{}\right]^{\mathsf{T}}\\
+  &=\frac{1}{t}V_{}+\mathcal{O}\left(\frac{1}{t^{2}}\right).
+\end{align}
+\item batch learning:
+\begin{equation}
+  \mathbb{E}\left[(\hat\theta_{t}-\theta_{})(\hat\theta_{t}-\theta_{})^{\mathsf{T}}\right]
+  =\frac{1}{t}V_{}+\mathcal{O}\left(\frac{1}{t^{2}}\right).
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org0f456bb}]{}
+\centering
+\includegraphics<+| handout:0>[page=11,width=0.9\textwidth]{online}%
+\includegraphics<+| handout:0>[page=12,width=0.9\textwidth]{online}%
+\includegraphics<+| handout:1>[page=13,width=0.9\textwidth]{online}%
+\includegraphics<+| handout:0>[page=14,width=0.9\textwidth]{online}%
+\includegraphics<+| handout:0>[page=15,width=0.9\textwidth]{online}%
+\end{frame}
+
+
+\section{Illustrative Example}
+\label{sec:orgab9a713}
+
+\subsection{Elo rating system}
+\label{sec:org567b732}
+\begin{frame}[label={sec:org7604891}]{Rating Systems}
+a method for evaluating the relative skill levels of players
+\begin{itemize}
+\item \structure{Elo rating}: Arpad Elo, 1960\\[0pt]
+used in competitor-versus-competitor games such as chess\\[0pt]
+scores given to players are updated according to game results
+\item \structure{Glicko rating}: Mark Glickman, 1997\\[0pt]
+including confidence of estimated skill levels
+\item \structure{TrueSkill}: Ralf Herbrich et al., 2007\\[0pt]
+extension to multiplayer games\\[0pt]
+skill levels are random variables (Bayesian framework)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orga64f345}]{Model of Elo Rating}
+\begin{itemize}
+\item score: \(\theta=(\theta^{1},\theta^{2},\dotsc)\)
+\item event: \(z_{t}=(a\succ b)\) (player \(a\) beats player \(b\) at time \(t\))
+\item probability model: 
+\begin{equation}
+  \Pr(a\succ b)
+  =P(z_{t};\theta)
+  =\frac{1}{1+\exp(\gamma\cdot(\theta^{b}-\theta^{a}))},
+\end{equation}
+where \(\gamma\) is defined such that
+a player whose rating is 200 points greater than the other
+is expected to have a 75$\backslash$% chance of winning.
+\item loss function: (negative log loss)
+\begin{equation}
+  l(z_{t};\theta)
+  =-\log P(z_{t};\theta)
+  =\log(1+\exp(\gamma\cdot(\theta^{b}-\theta^{a})))
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orgcf3fa6c}]{Update Rule of Elo Rating}
+\begin{itemize}
+\item gradient:
+\begin{equation}
+  \frac{\partial}{\partial\theta^{i}}
+  l(z_{t};\theta)=
+  \begin{cases}
+    0,&i\not=a,b\\
+    -\gamma\cdot(1-P(z_{t};\theta)),&i=a\text{ (winner)}\\
+    +\gamma\cdot(1-P(z_{t};\theta)),&i=b\text{ (looser)}
+  \end{cases}
+\end{equation}
+\item update rule:
+\begin{align}
+  \theta_{t+1}
+  &=\theta_{t}-\varepsilon\nabla l(z_{t};\theta)\\
+  &=\theta_{t}+
+    (0,\dotsc,\underbrace{\varepsilon\gamma(1-P)}_{a},\dotsc,
+    \underbrace{-\varepsilon\gamma(1-P)}_{b},\dotsc,0)^{T}
+\end{align}
+where \(k=\varepsilon\gamma=\;
+  \text{32 for novices, 16 for professionals}\).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:orge14d2c5}]{}
+\begin{columns}
+\begin{column}{0.65\columnwidth}
+\begin{center}
+  \includegraphics<+>[width=\textwidth]{elo_org1}%
+  \includegraphics<+>[width=\textwidth]{elo_org2}%
+  \includegraphics<+>[width=\textwidth]{elo_org3}%
+  % \includegraphics<+>[page=1,width=\textwidth]{elo_org}%
+  % \includegraphics<+>[page=2,width=\textwidth]{elo_org}%
+  % \includegraphics<+>[page=3,width=\textwidth]{elo_org}%
+\end{center}
+\end{column}
+\begin{column}{0.35\columnwidth}
+\structure{fixed rate}$\backslash$\ \(\varPhi_{t}=\varepsilon I\)
+\begin{itemize}
+\item \(10\) players\\[0pt]
+out of 100
+\item \(20000\) games\\[0pt]
+\{\small
+  (\(400\)[games/pl.])\}
+\item \(k=32,16,64\)
+\item \(\theta^{i}_{0}=1500\)
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:org8a23739}]{Optimal Update Rule}
+\begin{itemize}
+\item update rule: (\(\varPhi\): matrix)
+\begin{align}
+  \theta_{t+1}
+  &=\theta_{t}-\varPhi_{t}\nabla l(z_{t};\theta_{t}),\\
+  \varPhi_{t+1}
+  &=
+    \varPhi_{t}
+    -\frac{\varPhi_{t}\nabla l_{t}\nabla l_{t}^{\mathsf{T}}\varPhi_{t}}
+    {1+\nabla l_{t}^{\mathsf{T}}\varPhi_{t}\nabla l_{t}},\\
+  \nabla l_{t}
+  &=\nabla l(z_{t+1};\theta_{t})\\	 
+  &=(0,\dotsc,\underbrace{\gamma(1-P)}_{a},\dotsc,
+    \underbrace{-\gamma(1-P)}_{b},\dotsc,0)^{T}
+\end{align}
+\item initial value:
+\begin{equation}
+  \varPhi_{0}=k I\quad \text{\(I\) is the identity matrix}
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org1c99c5d}]{}
+\begin{columns}
+\begin{column}{0.65\columnwidth}
+\begin{center}
+  \includegraphics[width=\textwidth]{elo_opt}%
+\end{center}
+\end{column}
+\begin{column}{0.35\columnwidth}
+\structure{optimal rate}
+\begin{itemize}
+\item \(10\) players\\[0pt]
+out of 100
+\item \(20000\) games\\[0pt]
+\{\small
+  (\(400\)[games/pl.])\}
+\item sensitive to initial value
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\subsection{restricted gradient problem}
+\label{sec:orgfc760a0}
+\begin{frame}[label={sec:org0a8726c}]{Problem of Semi-Optimal Update}
+\begin{itemize}
+\item original update rule:
+\(\varDelta\theta=-\varepsilon\nabla l(z_{t};\theta)\)
+\begin{itemize}
+\item only related players are updated:
+\(\varDelta\theta^{i}=0,\;i\not=a,b\).
+\item sum of \(\theta\) is kept constant: 
+\(\boldsymbol{1}^{\mathsf{T}}\varDelta\theta=0\).
+\end{itemize}
+\item optimal update rule:
+\(\varDelta\theta=-\varPhi_{t}\nabla l(z_{t};\theta)\)
+\begin{itemize}
+\item all the players are updated, because
+\(\varPhi_{t}=\hat{H}_{t}^{-1}/t\) is a dense matrix.
+\item sum of \(\theta\) is not necessarily kept constant.
+\end{itemize}
+\item our problem: 
+design \(\varPhi_{t}\) to fit the original restriction.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org7cfbb67}]{Description of Restrictions}
+\begin{itemize}
+\item \(1\) vs \(1\) case: (players a and b)
+\begin{equation}
+  \varDelta\theta=\alpha\boldsymbol{a},
+  \quad
+  \boldsymbol{a}^{\mathsf{T}}=
+  \bordermatrix{
+    &a&b&c&\cr
+    &1&-1&0&\cdots
+  },
+\end{equation}
+or
+\begin{equation}
+  B^{\mathsf{T}}\varDelta\theta=0,
+  \quad
+  B^{\mathsf{T}}=
+  \bordermatrix{
+    &a&b&c&d&\cr
+    &1&1&0&0&\cdots\cr
+    &0&0&1&0&\cdots\cr
+    &0&0&0&1&\cdots\cr
+    &\vdots&\vdots&&&\ddots
+  }.
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org1403b18}]{Description of Restrictions}
+\begin{itemize}
+\item \(2\) vs \(2\) case: (players a\(+\)b and c\(+\)d)
+\begin{equation}
+  \varDelta\theta=A\alpha,
+  \quad
+  A^{\mathsf{T}}=
+  \bordermatrix{
+    &a&b&c&d&e&\cr
+    &1&0&-1&0&0&\cdots\cr
+    &1&0&0&-1&0&\cdots\cr
+    &0&1&-1&0&0&\cdots\cr
+  },
+\end{equation}
+or
+\begin{equation}
+  B^{\mathsf{T}}\varDelta\theta=0,
+  \quad
+  B^{\mathsf{T}}=
+  \bordermatrix{
+    &a&b&c&d&e&f&\cr
+    &1&1&1&1&0&0&\cdots\cr
+    &0&0&0&0&1&0&\cdots\cr
+    &0&0&0&0&0&1&\cdots\cr
+    &\vdots&\vdots&&&&&\ddots
+  }.
+\end{equation}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org45124a5}]{Problem Formulation}
+\begin{alertblock}{Problem A}
+Find an ``optimal'' gradient 
+\(\varDelta\theta=\varPhi\nabla l(z;\theta)\)
+subject to
+\begin{equation}
+  \varDelta\theta\in \operatorname{Im}A,
+  \quad (\varDelta\theta=A\alpha,\;\alpha\in\mathbb{R}^{k})
+\end{equation}
+for a matrix \(A\in\mathbb{R}^{m\times k}\).
+\end{alertblock}
+\begin{alertblock}{Problem B}
+Find an ``optimal'' gradient 
+\(\varDelta\theta=\varPhi\nabla l(z;\theta)\)
+subject to
+\begin{equation}
+  \varDelta\theta\in \operatorname{Ker}B^{\mathsf{T}},
+  \quad (B^{\mathsf{T}}\varDelta\theta=0)
+\end{equation}
+for a matrix \(B\in\mathbb{R}^{m\times(m-k)}\),
+\end{alertblock}
+cf. \(f(\theta)=\text{const.}\Rightarrow \nabla f(\theta)^{\mathsf{T}}\varDelta\theta=0\)
+\end{frame}
+
+\begin{frame}[label={sec:org620cc81}]{Assumptions}
+\begin{itemize}
+\item optimality is defined in terms of
+\begin{equation}
+  \text{minimize}\;\|H^{-1}\nabla l-\varDelta\theta\|_{M},
+\end{equation}
+where 
+\(\|x\|_{M}^{2}=\langle x,x\rangle_{M}\)
+and 
+\(\langle x,y\rangle_{M}=\langle Mx,y\rangle\).
+\item \(M\) is chosen as \(H\), because
+\begin{itemize}
+\item quadratic approximation of population loss:
+\begin{equation}
+  \|\theta-\theta_{}\|_{H}^{2}
+  =(\theta-\theta_{})^{\mathsf{T}}H(\theta-\theta_{})
+  =L(\theta)-L(\theta_{})
+\end{equation}
+\item Mahalanobis distance in maximum likelihood case:
+\begin{equation}
+  \mathbb{V}[\hat\theta_{t}]
+  =\frac{1}{t}H^{-1}GH^{-1}
+  =\frac{1}{t}H^{-1}
+\end{equation}
+\% - (\(\varPhi_{t}\) becomes symmetric.)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[label={sec:org663a862}]{Solutions}
+\begin{itemize}
+\item decompose \(\varPhi_{t}\) into scalar and matrix parts as
+\begin{equation}
+  \varPhi_{t}=\varepsilon_{t} C,\quad\text{(e.g., \(\varepsilon_{t}=1/t\))}
+\end{equation}
+\item solutions for the problems are:
+\end{itemize}
+\begin{block}{Problem A}
+\begin{equation}
+  C_{A}=A(A^{\mathsf{T}}HA)^{-1}A^{\mathsf{T}}
+\end{equation}
+\end{block}
+\begin{block}{Problem B}
+\begin{equation}
+  C_{B}=H^{-1}-H^{-1}B(B^{\mathsf{T}}H^{-1}B)^{-1}B^{\mathsf{T}}H^{-1}
+\end{equation}
+\end{block}
+\end{frame}
+
+\begin{frame}[label={sec:org004bdab}]{}
+\begin{columns}
+\begin{column}{0.65\columnwidth}
+\begin{center}
+  \includegraphics[width=\textwidth]{elo_sub}%
+\end{center}
+\end{column}
+\begin{column}{0.35\columnwidth}
+\structure{sub-optimal rate}
+\begin{itemize}
+\item \(10\) players\\[0pt]
+out of 100
+\item \(20000\) games\\[0pt]
+\{\small
+(\(400\)[games/pl.])\}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[label={sec:org22ea732}]{Notes on Solutions}
+\begin{itemize}
+\item \(C_{A}\) and \(C_{B}\) are symmetric (only when \(M=H\)).
+\item \(C_{A}H\) or \(C_{B}H\) is a projection matrix:
+
+\begin{equation}
+  \lambda
+  =
+  \begin{cases}
+    1,& v\in\operatorname{Im}A\text{ or }\operatorname{Ker}B,\\
+    0,& \text{otherwise}.
+  \end{cases}
+  % =
+  % \begin{cases}
+  %   1,& \text{otherwise},\\
+  %   0,& v\in\operatorname{Ker}B.
+  % \end{cases}
+\end{equation}
+\item if \(k\) is small, calculating \(C_{A}\) is more efficient than \(C_{B}\).
+\item only a few parameters are updated, however convergence is as
+good as optimal case.\\[0pt]
+(information loss is quite small in some case)
+\end{itemize}
+\end{frame}
+
+\section{Conclusion}
+\label{sec:orga5c8888}
+\begin{frame}[label={sec:orgfd8359d}]{Concluding Remarks}
+we have investigated
+\begin{itemize}
+\item dynamics of convergence phase of on-line learning,
+\item conditions for optimal convergence rate,
+\item optimal projection of gradients to subspaces,
+\end{itemize}
+
+practical applications would be
+\begin{itemize}
+\item skill level rating systems,
+\item on-line learning for Bradley-Terry model,
+\item distributed control systems.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{References}
+\printbibliography[heading=none]
+\end{frame}
+\end{document}
