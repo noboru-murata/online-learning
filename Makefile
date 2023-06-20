@@ -1,8 +1,10 @@
 .SUFFIXES: .tex .dvi .pdf
 
-NAME 	= online-learning
-PDF	= slide.pdf
-SRC	= slide.tex
+NAME 	= $(shell head -1 README.org | tr -d '*[:space:]')
+# NAME 	= online-learning
+ORG	= slide.org
+TEX	= $(ORG:%.org=%.tex)
+PDF	= $(ORG:%.org=%.pdf)
 SUB	= $(shell ls main/*.tex)
 GIF 	= thumbnail.gif
 
@@ -16,11 +18,11 @@ MSG	= $(shell head -1 VERSION)
 
 all:	$(PDF)
 
-$(PDF):
-	latexmk $(SRC)
+pdf:
+	latexmk $(TEX)
 
 clean:
-	latexmk -C $(SRC)
+	latexmk -C $(TEX)
 
 view:
 	open $(PDF)
@@ -31,14 +33,13 @@ hugo:
 	$(RSYNC) $(GIF) $(HUGO)/pdfs/$(NAME).gif
 
 thumbnail:
-	convert -density 150 slide.pdf -thumbnail "600x600>" thumbnail.gif 
-	mogrify -loop 0 -delay 100 thumbnail.gif
+	convert -density 150 -delay 100 slide.pdf -thumbnail "600x600>" thumbnail.gif 
 
 delay:
 	mogrify -loop 0 -delay 200 thumbnail.gif
 
 git-add:
-	git add *.tex main/*.tex
+	git add $(ORG) $(TEX) $(PDF)
 
 push:
 	git add -u

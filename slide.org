@@ -39,24 +39,24 @@
 ** batch and on-line learning
 *** Problem Setting
 notation:
-- \structure{data}: 
+- data: 
   i.i.d.~ observations from ground truth distribution \(P\)
   \begin{equation}
     z_{1},z_{2},\dotsc,z_{t},\dotsc \sim^{\mathrm{i.i.d.}} P 
     % \quad\text{(ground truth)}
   \end{equation}
-- \structure{learning machine}: 
+- learning machine:
   specified by a finite dimensional parameter
   \begin{equation}
     \theta \in \Theta\subset \mathbb{R}^{m}
   \end{equation}
-- \structure{loss function}: 
+- loss function:
   penalty of machine \(\theta\) for a given datum \(z\) 
   \begin{equation}
     l(z;\theta)
     \quad\text{(a smooth function with respect to \(\theta\))}
   \end{equation}
-  for example:
+  for example
   \begin{align}
     l(z;\theta)&=-\log p(z:\theta)
     &&\text{negative log loss}\\[-2pt]
@@ -65,7 +65,7 @@ notation:
   \end{align}
 
 *** Expected Losses
-- \structure{population loss}: not accessible
+- population loss: not accessible
   \begin{equation}
     L(\theta)
     =\mathbb{E}_{Z\sim P}[l(Z;\theta)]
@@ -75,7 +75,7 @@ notation:
     = \arg\min_\theta L(\theta)
     \quad\text{(optimal parameter)}
   \end{equation}
-- \structure{empirical loss}: accessible
+- empirical loss: accessible
   \begin{equation}
     \hat{L}_{t}(\theta)
     =\frac{1}{t}\sum_{z_{i}\in D_{t}}l(z_{i};\theta),
@@ -90,12 +90,12 @@ notation:
   \end{equation}
 
 *** Batch and On-line Learning
-- \structure{batch learning}: minimize the empirical loss
+- batch learning: minimize the empirical loss
   \begin{equation}
     \hat\theta_{t}
     = \arg\min_\theta \hat{L}_{t}(\theta),
   \end{equation}
-- \structure{on-line learning}: update sequentially
+- on-line learning: update sequentially
   with a datum sampled at each time
   (or resampled from pooled data)
   \begin{equation}
@@ -108,17 +108,17 @@ notation:
   and \(\varPhi\) is a matrix which controls the rate of convergence.
 
 *** Characteristics
-- \structure{batch learning}:
-  - pros::  can adopt wide class of loss functions
-  - cons::  shows slow convergence\\
+- batch learning:
+  - pros ::  can adopt wide class of loss functions
+  - cons ::  shows slow convergence\\
     may have many local minima\\
     should store all the observations
-- \structure{on-line learning}:
-  - pros:: do not have to store all the observations\\
+- on-line learning:
+  - pros :: do not have to store all the observations\\
     (good for massive data stream)\\
     can escape from local minima\\
     can follow the change of true distributions
-  - cons:: should control learning rate \(\varepsilon\) properly\\
+  - cons :: should control learning rate \(\varepsilon\) properly\\
     (do not converge with constant \(\varepsilon\))
 *** 
 #+begin_export latex
@@ -619,12 +619,12 @@ for any \(m\times m\) square matrices \(A,B,C\).
 ** Elo rating system
 *** Rating Systems
 a method for evaluating the relative skill levels of players
-- \structure{Elo rating}: Arpad Elo, 1960\\
+- Elo rating: Arpad Elo, 1960\\
   used in competitor-versus-competitor games such as chess\\
   scores given to players are updated according to game results
-- \structure{Glicko rating}: Mark Glickman, 1997\\
+- Glicko rating: Mark Glickman, 1997\\
   including confidence of estimated skill levels
-- \structure{TrueSkill}: Ralf Herbrich et al., 2007\\
+- TrueSkill: Ralf Herbrich et al., 2007\\
   extension to multiplayer games\\
   skill levels are random variables (Bayesian framework)
 
@@ -696,7 +696,7 @@ a method for evaluating the relative skill levels of players
 :PROPERTIES:
 :BEAMER_col: 0.35
 :END:
-\structure{fixed rate}\\ \(\varPhi_{t}=\varepsilon I\)
+fixed rate\\ \(\varPhi_{t}=\varepsilon I\)
 - \(10\) players\\
   out of 100
 - \(20000\) games\\
@@ -737,7 +737,7 @@ a method for evaluating the relative skill levels of players
 :PROPERTIES:
 :BEAMER_col: 0.35
 :END:
-\structure{optimal rate}
+optimal rate
 - \(10\) players\\
   out of 100
 - \(20000\) games\\
@@ -921,7 +921,7 @@ cf. \(f(\theta)=\text{const.}\Rightarrow \nabla f(\theta)^{\mathsf{T}}\varDelta\
 :PROPERTIES:
 :BEAMER_col: 0.35
 :END:
-\structure{sub-optimal rate}
+sub-optimal rate
 - \(10\) players\\
   out of 100
 - \(20000\) games\\
