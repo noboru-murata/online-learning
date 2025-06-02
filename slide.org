@@ -61,7 +61,7 @@ notation:
     l(z;\theta)&=-\log p(z:\theta)
     &&\text{negative log loss}\\[-2pt]
     l(z;\theta)&=|y-f(x;\theta)|^{2}
-    &&\text{squared loss for \(z=(x,y)\)}
+    &&\text{squared loss for \(z=(x,y)\) (location model)}
   \end{align}
 
 *** Expected Losses
@@ -71,7 +71,7 @@ notation:
     =\mathbb{E}_{Z\sim P}[l(Z;\theta)]
   \end{equation}
   \begin{equation}
-    \theta_{}
+    \theta_{*}
     = \arg\min_\theta L(\theta)
     \quad\text{(optimal parameter)}
   \end{equation}
@@ -170,25 +170,25 @@ The distribution of \(\hat{\theta}_{t}\) converges
 to the normal distribution 
 \begin{equation}
   \hat{\theta}_{t}
-  \sim \mathcal{N}\left(\theta_*,\frac{1}{t}V_{}\right),\quad
-  V_{}=H^{-1}GH^{-1}
+  \sim \mathcal{N}\left(\theta_{*},\frac{1}{t}V_{*}\right),\quad
+  V_{*}=H^{-1}GH^{-1}
 \end{equation}
 under some regularity condition, where
 \begin{align}
   G
   &=\mathbb{E}_{Z\sim P}
     \left[
-    \nabla l(Z;\theta_{}) \nabla l(Z;\theta_{})^{\mathsf{T}}
+    \nabla l(Z;\theta_{*}) \nabla l(Z;\theta_{*})^{\mathsf{T}}
     \right],\\
   H
   &=\mathbb{E}_{Z\sim P}
     \left[
-    \nabla\nabla l(Z;\theta_{})
+    \nabla\nabla l(Z;\theta_{*})
     \right],
 \end{align}
-and \(\theta_{}\) is the optimal parameter of the population loss:
+and \(\theta_{*}\) is the optimal parameter of the population loss:
 \begin{equation}
-  \theta_{}
+  \theta_{*}
   = \arg\min_\theta L(\theta).
 \end{equation}
 
@@ -222,7 +222,7 @@ The variance is asymptotically given by
 The expectation of the empirical loss is asymptotically given by
 \begin{equation}
   \mathbb{E}\Bigl[\hat{L}_{t}(\hat\theta_{t})\Bigr]
-  =L(\theta_{})
+  =L(\theta_{*})
   -\frac{1}{2t}\mathrm{tr}\, GH^{-1}
   +o\left(\frac{1}{t}\right),
 \end{equation}
@@ -232,7 +232,7 @@ where the expectation is taken with respect to \(D_{t}\).
 The variance is asymptotically given by
 \begin{equation}
   \mathbb{V}\Bigl[\hat{L}_{t}(\hat\theta_{t})\Bigr]
-  =\frac{1}{t}\mathbb{V}_{Z\sim P}\left[l(Z;\theta_{})\right]
+  =\frac{1}{t}\mathbb{V}_{Z\sim P}\left[l(Z;\theta_{*})\right]
   +o\left(\frac{1}{t}\right).
 \end{equation}
 
@@ -247,7 +247,7 @@ The variance is asymptotically given by
 - training error:
   \begin{equation}
     \mathbb{E}\Bigl[\hat{L}_{t}(\hat\theta_{t})\Bigr]
-    =L(\theta_{})
+    =L(\theta_{*})
     -\frac{1}{2t}\mathrm{tr}\, GH^{-1}
     +o\left(\frac{1}{t}\right),
   \end{equation}
@@ -270,7 +270,7 @@ estimated from the training error by correcting the bias as
   % +\frac{1}{t}\mathrm{tr}\, GH^{-1}.
 \end{equation}
 In the case of the maximum likelihood estimation,
-if the ground truth is realized by \(\theta_{}\), 
+if the ground truth is realized by \(\theta_{*}\), 
 \begin{equation}
   L(\hat\theta_{t})
   =
@@ -328,7 +328,8 @@ where \(\hat{H}_{t}\) is the empirical Hessian defined by
     % \varepsilon_{t} = \frac{1}{t} \hat{H}_{t},
     % \quad\text{\(\varepsilon_{t}\): matrix}
   \end{equation}
-- on-line estimate of Hessian: %(Kalman filtering;Bottou, 1998)
+- on-line estimate of Hessian:
+   # %(Kalman filtering;Bottou, 1998)
   (MLE case; Bottou, 1998)
   \begin{align}
     \varPhi_{t+1}
@@ -471,33 +472,33 @@ hold:
 \begin{align}
   \bar{\theta}_{t+1}
   &=\bar{\theta}_{t}
-    -Q_{t}(\bar{\theta}_{t}-\theta_{}),\\
+    -Q_{t}(\bar{\theta}_{t}-\theta_{*}),\\
   V_{t+1}
   &=V_{t}
     -\Xi_{Q_{t}}V_{t}
-    +\Omega_{Q_{t}}V_{}
-    -\Omega_{Q_{t}}(\bar{\theta}_{t}-\theta_{}) 
-    (\bar{\theta}_{t}-\theta_{})^{\mathsf{T}},
+    +\Omega_{Q_{t}}V_{*}
+    -\Omega_{Q_{t}}(\bar{\theta}_{t}-\theta_{*}) 
+    (\bar{\theta}_{t}-\theta_{*})^{\mathsf{T}},
 \end{align}
 # % \begin{align}
 # %   \bar{\theta}_{t+1}&=\bar{\theta}_{t}
-# %   -\varepsilon_{t} Q_{t}(\bar{\theta}_{t}-\theta_{}),\\
+# %   -\varepsilon_{t} Q_{t}(\bar{\theta}_{t}-\theta_{*}),\\
 # %   V_{t+1}&=V_{t}
 # %   -\varepsilon_{t}\Xi_{Q_{t}}V_{t}
-# %   +\varepsilon_{t}^2\Omega_{Q_{t}}V_{}
-# %   -\varepsilon_{t}^2\Omega_{Q_{t}}(\bar{\theta}_{t}-\theta_{}) 
-# %   (\bar{\theta}_{t}-\theta_{})^{\mathsf{T}},
+# %   +\varepsilon_{t}^2\Omega_{Q_{t}}V_{*}
+# %   -\varepsilon_{t}^2\Omega_{Q_{t}}(\bar{\theta}_{t}-\theta_{*}) 
+# %   (\bar{\theta}_{t}-\theta_{*})^{\mathsf{T}},
 # %%   V_{t+1}&=V_{t}
 # %%   -\varepsilon_{t}(Q_{t}V_{t}+V_{t}Q_{t}^{\mathsf{T}})
-# %%   +\varepsilon_{t}^2Q_{t}V_{}Q_{t}^{\mathsf{T}}\\
+# %%   +\varepsilon_{t}^2Q_{t}V_{*}Q_{t}^{\mathsf{T}}\\
 # %%   &\phantom{V_{t}}
-# %%   -\varepsilon_{t}^2Q_{t}(\bar{\theta}_{t}-\theta_{}) 
-# %%   (\bar{\theta}_{t}-\theta_{})^{\mathsf{T}}Q_{t}^{\mathsf{T}},
+# %%   -\varepsilon_{t}^2Q_{t}(\bar{\theta}_{t}-\theta_{*}) 
+# %%   (\bar{\theta}_{t}-\theta_{*})^{\mathsf{T}}Q_{t}^{\mathsf{T}},
 # % \end{align}
 where
 \begin{equation}
   Q_{t}=\varPhi_{t}H,\quad
-  V_{}=H^{-1}GH^{-1}.
+  V_{*}=H^{-1}GH^{-1}.
 \end{equation}
 (note: \(\Xi_{A}M= AM+(AM)^{\mathsf{T}},\;\Omega_{A}M= AMA^{\mathsf{T}}\))
 # % \begin{align}
@@ -510,7 +511,7 @@ where
 # %%                                 \bar\theta_{t}&=\mathbb{E}\left[\theta_{t}\right]\\
 # %%                                 V_{t}&=\mathbb{V}\left[\theta_{t}\right]\\
 # %         Q_{t}&=C_{t}H,\\
-# %         V_{}&=H^{-1}GH^{-1}.
+# %         V_{*}&=H^{-1}GH^{-1}.
 # %       \end{align}
 
 *** Convergence Rate of \(1/t\)-annealing
@@ -525,20 +526,20 @@ the leading terms are given by
 # %                          following approximated relations hold:
 \begin{align}
   \bar\theta_{t}
-  &=\theta_{}+S_{t}(\theta_{0}-\theta_{}),
+  &=\theta_{*}+S_{t}(\theta_{0}-\theta_{*}),
     \quad
     S_{t}
     =\prod_{\tau=2}^{t}\left(I-\frac{CH}{\tau}\right)
     =\mathcal{O}\left(\frac{1}{t^{\lambda_{\min}}}\right),\\
   V_{t}
-  &=\left[\left(\Xi_{CH}-I\right)^{-1}\Omega_{CH}\right]\frac{1}{t}V_{},
-    \quad V_{}=H^{-1}GH^{-1},
+  &=\left[\left(\Xi_{CH}-I\right)^{-1}\Omega_{CH}\right]\frac{1}{t}V_{*},
+    \quad V_{*}=H^{-1}GH^{-1},
 \end{align}
 where \(\theta_{0}\) is an initial parameter.
 # %         , and 
 # %         \begin{equation}
 # %   %%           Q=CH,\quad
-# %         V_{}=H^{-1}GH^{-1}.
+# %         V_{*}=H^{-1}GH^{-1}.
 # %         \end{equation}
 
 *** Eigenvalues of Operators
@@ -561,7 +562,7 @@ The eigenvalues of \(\Xi_{A}\) and \(\Omega_{A}\) are given by
 # %                      \begin{equation}
 # %                      \lambda_{i}\lambda_{j},\;i,j=1,\dotsc,m
 # %                      \end{equation}
-****                                                             :B_proof:
+**** Proof                                                       :B_proof:
 :PROPERTIES:
 :BEAMER_env: proof
 :END:
@@ -574,33 +575,34 @@ for any \(m\times m\) square matrices \(A,B,C\).
 *** Optimal Design of \(\varPhi_{t}=C/t\)
 - larger \(\lambda_{\min}\) is advantageous to faster convergence of
   \(\bar\theta_{t}\).
-- \((\Xi_{CH}-I)^{-1}\Omega_{CH}\) expands \(V_{}/t\), which is the
+- \((\Xi_{CH}-I)^{-1}\Omega_{CH}\) expands \(V_{*}/t\), which is the
   minimum covariance attained by batch learning.
 - eigenvalues of \((\Xi_{CH}-I)^{-1}\Omega_{CH}\) are given by
   \begin{equation}
     \frac{\lambda_{i}\lambda_{j}}{\lambda_{i}+\lambda_{j}-1},
   \end{equation}
   where \(\lambda_{i}\)'s are eigenvalues of \(CH\).
-- if \(C=H^{-1}\), %i.e. \(CH=I\),
+- if \(C=H^{-1}\),
+   # %i.e. \(CH=I\),
   all the eigenvalues of \((\Xi_{I}-I)^{-1}\Omega_{I}\) 
-  are equal to 1, i.e. \(V_{t}=V_{}/t\).
+  are equal to 1, i.e. \(V_{t}=V_{*}/t\).
 - \(\varPhi_{t}=H^{-1}/t\) is optimal.
 
 *** Equivalence to Batch Learning
 - on-line learning: 
   \begin{align}
-    \mathbb{E}\left[(\theta_{t}-\theta_{})(\theta_{t}-\theta_{})^{\mathsf{T}}\right]
+    \mathbb{E}\left[(\theta_{t}-\theta_{*})(\theta_{t}-\theta_{*})^{\mathsf{T}}\right]
     &=\mathbb{V}\left[\theta_{t}\right]
     % +\text{bias}
     % +\mathcal{O}\left(\frac{1}{t^{2}}\right)
-      +\mathbb{E}\left[\theta_{t}-\theta_{}\right]
-      \mathbb{E}\left[\theta_{t}-\theta_{}\right]^{\mathsf{T}}\\
-    &=\frac{1}{t}V_{}+\mathcal{O}\left(\frac{1}{t^{2}}\right).
+      +\mathbb{E}\left[\theta_{t}-\theta_{*}\right]
+      \mathbb{E}\left[\theta_{t}-\theta_{*}\right]^{\mathsf{T}}\\
+    &=\frac{1}{t}V_{*}+\mathcal{O}\left(\frac{1}{t^{2}}\right).
   \end{align}
 - batch learning:
   \begin{equation}
-    \mathbb{E}\left[(\hat\theta_{t}-\theta_{})(\hat\theta_{t}-\theta_{})^{\mathsf{T}}\right]
-    =\frac{1}{t}V_{}+\mathcal{O}\left(\frac{1}{t^{2}}\right).
+    \mathbb{E}\left[(\hat\theta_{t}-\theta_{*})(\hat\theta_{t}-\theta_{*})^{\mathsf{T}}\right]
+    =\frac{1}{t}V_{*}+\mathcal{O}\left(\frac{1}{t^{2}}\right).
   \end{equation}
 
 *** 
@@ -857,9 +859,9 @@ cf. \(f(\theta)=\text{const.}\Rightarrow \nabla f(\theta)^{\mathsf{T}}\varDelta\
 - \(M\) is chosen as \(H\), because
   - quadratic approximation of population loss:
     \begin{equation}
-      \|\theta-\theta_{}\|_{H}^{2}
-      =(\theta-\theta_{})^{\mathsf{T}}H(\theta-\theta_{})
-      =L(\theta)-L(\theta_{})
+      \|\theta-\theta_{*}\|_{H}^{2}
+      =(\theta-\theta_{*})^{\mathsf{T}}H(\theta-\theta_{*})
+      =L(\theta)-L(\theta_{*})
     \end{equation}
   - Mahalanobis distance in maximum likelihood case:
     \begin{equation}
@@ -867,7 +869,7 @@ cf. \(f(\theta)=\text{const.}\Rightarrow \nabla f(\theta)^{\mathsf{T}}\varDelta\
       =\frac{1}{t}H^{-1}GH^{-1}
       =\frac{1}{t}H^{-1}
     \end{equation}
-    % - (\(\varPhi_{t}\) becomes symmetric.)
+    # % - (\(\varPhi_{t}\) becomes symmetric.)
 
 *** Solutions
 - decompose \(\varPhi_{t}\) into scalar and matrix parts as
@@ -933,12 +935,12 @@ sub-optimal rate
 - \(C_{A}H\) or \(C_{B}H\) is a projection matrix:
   # %           \begin{align}
   # %           \bar{\theta}_{t+1}&=\bar{\theta}_{t}
-  # %                                           -\varepsilon_{t} Q_{t}(\bar{\theta}_{t}-\theta_{}),\\
+  # %                                           -\varepsilon_{t} Q_{t}(\bar{\theta}_{t}-\theta_{*}),\\
   # %           V_{t+1}&=V_{t}
   # %                                -\varepsilon_{t}\Xi_{Q_{t}}V_{t}
-  # %                                +\varepsilon_{t}^2\Omega_{Q_{t}}V_{}
-  # %                                -\varepsilon_{t}^2\Omega_{Q_{t}}(\bar{\theta}_{t}-\theta_{}) 
-  # %                                (\bar{\theta}_{t}-\theta_{})^{\mathsf{T}}.
+  # %                                +\varepsilon_{t}^2\Omega_{Q_{t}}V_{*}
+  # %                                -\varepsilon_{t}^2\Omega_{Q_{t}}(\bar{\theta}_{t}-\theta_{*}) 
+  # %                                (\bar{\theta}_{t}-\theta_{*})^{\mathsf{T}}.
   # %         \end{align}
   # %                                eigenvalues \(\lambda\) and eigenvectors \(v\) are of \(Q_{t}\) are:
   \begin{equation}

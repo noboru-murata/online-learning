@@ -1,1 +1,15 @@
 * online-learning
+
+Learning is a flexible and effective means of extracting the
+stochastic structure of the environment.  In practice, two different
+types of learning are used, namely batch learning and on-line
+learning. The batch learning procedure uses all the training examples
+repeatedly so that its performance is compared to the statistical
+estimation procedure. On-line learning is more dynamical, updating the
+current estimate by observing a new datum one by one. On-line learning
+is slow in general but works well in the changing environment. We give
+a unified framework of statistical analysis for batch and on-line
+learning. The topics include the asymptotic learning curve,
+generalization error and training error, over-fitting and
+over-training, efficiency of learning, and an adaptive method of
+determining learning rate.

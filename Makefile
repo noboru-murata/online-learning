@@ -33,7 +33,7 @@ hugo:
 	$(RSYNC) $(GIF) $(HUGO)/pdfs/$(NAME).gif
 
 thumbnail:
-	convert -density 150 -delay 100 slide.pdf -thumbnail "600x600>" thumbnail.gif 
+	magick -density 150 -delay 100 slide.pdf -thumbnail "600x600>" thumbnail.gif 
 
 delay:
 	mogrify -loop 0 -delay 200 thumbnail.gif
